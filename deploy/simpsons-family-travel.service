@@ -1,0 +1,31 @@
+[Unit]
+Description=Simpsons Family Travel public fictional demo
+After=network.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+StateDirectory=simpsons-family-travel
+StateDirectoryMode=0700
+WorkingDirectory=/app
+BindReadOnlyPaths=/root/lalten/apps/simpsons-family-travel:/app
+ExecStart=/usr/bin/python3 -B -u /app/server.py --data /var/lib/simpsons-family-travel --port 8762 --origin https://lalten.org --origin https://www.lalten.org
+Restart=on-failure
+RestartSec=3
+UMask=0077
+Environment=PYTHONDONTWRITEBYTECODE=1
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=tmpfs
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=128M
+TasksMax=64
+
+[Install]
+WantedBy=multi-user.target

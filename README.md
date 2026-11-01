@@ -8,6 +8,12 @@ The app uses **Python’s standard library and plain HTML/CSS/JavaScript**. Ther
 
 [Mobile screenshot](docs/demo-mobile.png)
 
+## Live demo
+
+**[Try it on lalten.org](https://lalten.org/simpsons-travel/).** No Tailscale or login is needed. This is a public, shared fictional demo: checklist changes are visible to every visitor. Use invented information only. The code repository and the running website have independent visibility settings.
+
+Deployment details and the checked-in service/proxy templates are in [deploy/README.md](deploy/README.md).
+
 ## The route
 
 **Springfield → Brockway → Terror Lake → Cypress Creek → Ogdenville → North Haverbrook → Springfield**
