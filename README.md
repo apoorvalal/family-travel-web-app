@@ -1,8 +1,17 @@
-# The Simpsons’ Great Escape
+# Family travel web app
 
-A small, self-hosted family travel dashboard with a shared packing checklist, travel-admin tasks, itinerary cards, booking references, ticket downloads and boarding passes. The sample family is **Homer, Marge, Bart, Lisa and Maggie Simpson**. All dates, routes, airport codes, carriers, booking references and PDFs are invented.
+A small, self-hosted family travel dashboard with a shared packing checklist, travel-admin tasks, itinerary cards, booking references, readable tickets and boarding passes.
+
+**Everything in the supplied demo is placeholder content, meant to be adapted for personal use.** The Simpsons are a sample family, not a required theme. Replace the people, destinations, dates, carriers, booking references, documents and checklist items with your own, and reshape the tabs and components to fit your household's travel-admin needs. All supplied travel details and PDFs are invented.
 
 The app uses **Python’s standard library and plain HTML/CSS/JavaScript**. There are no API keys, npm packages, database servers, analytics, external fonts or account registrations required to run it.
+
+## How to use it
+
+0. **Point your coding agent at this repository.** Ask it to adapt and run your own family travel dashboard.
+1. **Have the agent add or remove tabs and components to suit your admin needs.** Replace the placeholder family and trip, organize your packing and paperwork, and link your actual tickets and boarding passes. Keep personal documents and trip data in a private runtime directory, outside committed source.
+2. **Have the agent help set up Tailscale on the host, your personal devices and your family members’ devices.** Share access with the intended family members and host the dashboard privately with Tailscale Serve. See [private-network hosting](#private-network-hosting) for the server configuration.
+3. **Travel!** Open your dashboard from the family's devices, read PDFs directly in the browser and keep the shared checklists up to date.
 
 ![Desktop demo](docs/demo-desktop.png)
 
@@ -56,13 +65,13 @@ The server binds **127.0.0.1 only**. It does not become publicly reachable merel
 ## What works
 
 - **Itinerary:** six transport legs, local departure/arrival times, terminals, seat notes and connection/stay notes.
-- **Reservations:** two booking cards with copyable fictional references and one sample ticket per family member: ten tickets total.
-- **Boarding passes:** per-person downloads for the first and last legs: ten passes and one ten-page combined PDF. Intermediate legs deliberately have no issued boarding-pass samples.
+- **Reservations:** two booking cards with copyable fictional references and one sample ticket per family member: ten tickets total. “Read PDF” opens each ticket in a new browser tab.
+- **Boarding passes:** readable per-person PDFs for the first and last legs: ten passes and one ten-page combined PDF. Intermediate legs deliberately have no issued boarding-pass samples.
 - **Packing:** grouped checklists, progress indicators, search and hide-completed filtering.
 - **Travel admin:** a separate checklist with dated tasks. Ticking the visitor-card task also updates the checkbox in `todo.md`. No form is submitted.
 - **Custom additions:** add and remove your own packing/admin items. Built-in examples can be checked but not deleted from the UI.
 - **Shared state:** browser clients poll every five seconds and on reconnect/foreground activation. Changes persist across restarts.
-- **Exports:** download the current shared checklist as Markdown, plus the admin note and generated PDFs.
+- **Documents and exports:** read tickets, boarding passes and the combined PDF in the browser without a required download. Use the browser's save action if you want an offline copy. The shared checklist and admin note remain downloadable as Markdown.
 - **Responsive layout:** desktop and mobile screens; printable itinerary/checklist views.
 
 This is a shared household dashboard, not an airline booking system. It does not track live flights, submit travel documents, send reminders, create reservations or provide an offline-editing queue. Previously downloaded PDFs can be opened offline. Saving checklist changes requires a connection to the server.
@@ -122,11 +131,13 @@ No original passenger records, booking documents, private hostnames, local vault
 
 See `seed.py` for complete booking, flight, ticket and boarding-pass records. Those arrays are shortened above to explain the shape; that excerpt is not a replacement ready-to-run database.
 
-### Customize the demo
+### Adapt for personal use
 
-For another fictional trip, edit `seed.py` and the corresponding presentation text in `static/index.html`, then initialize a **new** data directory. Some descriptive hero/baggage/lounge text is deliberately static, while booking cards, flights, pass links and checklists are state-driven. Changing only the state file will not update all static presentation text.
+Have your agent replace the sample content and add or remove tabs and components according to your travel-admin needs. The current three tabs are examples, not a fixed set. Navigation and list rendering live in `static/app.js`; layout and descriptive text live in `static/index.html`; styling lives in `static/style.css`.
 
-The default sample supports five family members, but the rendering is list-driven rather than fixed to five people. Download labels and static descriptive copy should be updated if you change the number of documents or people.
+For another fictional demo, edit `seed.py` and initialize a **new** data directory. For personal use, put your actual trip records in the private data directory's `travel-app.json` and place your PDFs in that directory, with their filenames listed in the booking/pass records. Keep `seed.py` and committed examples fictional. Some hero/baggage/lounge text is static, while booking cards, flights, pass links and checklists are state-driven. Ask the agent to adapt both the data and presentation, including the demo-specific visitor-card task and its `todo.md` synchronization in `server.py`.
+
+The default sample supports five family members, but the rendering is list-driven rather than fixed to five people. Document counts, labels and static descriptive copy should be updated if you change the number of documents or people. Ticket, boarding-pass and combined-PDF links open the browser's reader in a new tab; they do not force a download.
 
 Back up your data directory before manual changes. Stop the server before editing live state by hand; simultaneous manual edits are not supported. Do not put sensitive trip data inside a public checkout or commit it. The default data directory is ignored by Git, but an arbitrary custom directory will need its own ignore/backup policy.
 
@@ -168,12 +179,12 @@ For an always-on deployment, run the command through your operating system’s s
 | Method | Path | Purpose |
 | --- | --- | --- |
 | GET | `/health` | Liveness probe |
-| GET | `/api/state` | Trip, references, download manifest and current checklist |
+| GET | `/api/state` | Trip, references, document manifest and current checklist |
 | POST | `/api/items` | Add a custom item, set a checkbox or remove a custom item |
 | GET | `/export/checklist.md` | Current grouped Markdown checklist |
 | GET | `/todo.md` | Admin-note checkbox mirror |
-| GET | `/tickets/<listed-name>.pdf` | Allowlisted sample ticket |
-| GET | `/boarding-passes/<listed-name>.pdf` | Allowlisted pass or bundle |
+| GET | `/tickets/<listed-name>.pdf` | Allowlisted ticket, served inline for browser reading |
+| GET | `/boarding-passes/<listed-name>.pdf` | Allowlisted pass or bundle, served inline for browser reading |
 
 The same routes work under `/apps/travel`. Example mutation for the default local port:
 
@@ -195,7 +206,7 @@ Run the dependency-free test suite:
 python3 -B tests.py
 ```
 
-It starts its own temporary server/data directory and does not touch another running instance. It checks sample initialization, all download routes, PDF page counts, checklist updates/exports, visitor-card synchronization, input validation, CSRF defenses and state persistence after restart.
+It starts its own temporary server/data directory and does not touch another running instance. It checks sample initialization, inline PDF responses, PDF page counts, checklist updates/exports, visitor-card synchronization, input validation, CSRF defenses and state persistence after restart.
 
 Optional browser verification requires an existing Node.js installation, Playwright and Chrome/Chromium. There is no browser-test dependency in the running app. Install Playwright in a separate disposable tools directory, not the runtime data directory, or use an existing installation:
 
@@ -210,7 +221,7 @@ QA_OUTPUT=./qa-output/screenshots \
 node qa.mjs
 ```
 
-Browser QA is restricted to localhost port 18080 to avoid changing a live deployment. It exercises both desktop/mobile layouts, shared updates between two browser contexts, copy, search, custom items, downloads and admin-note synchronization. It removes its temporary checklist additions before exit. Test results and screenshots belong in the ignored `qa-output/` directory.
+Browser QA is restricted to localhost port 18080 to avoid changing a live deployment. It exercises both desktop/mobile layouts, PDF reading in new tabs without forced downloads, shared updates between two browser contexts, copy, search, custom items and admin-note synchronization. It removes its temporary checklist additions before exit. Test results and screenshots belong in the ignored `qa-output/` directory.
 
 ## Attribution
 

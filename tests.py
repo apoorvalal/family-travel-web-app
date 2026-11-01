@@ -73,18 +73,22 @@ class DemoTests(unittest.TestCase):
         self.assertFalse(initialize(self.data))
         self.assertEqual(before, (self.data / 'travel-app.json').read_bytes())
 
-    def test_all_ticket_and_boarding_downloads(self):
+    def test_all_ticket_and_boarding_pdfs_open_inline(self):
         s = self.state()
         paths = ['/tickets/' + i['file'] for b in s['trip']['bookings'] for i in b['tickets']]
         bp = s['trip']['boardingPasses']
         paths += ['/boarding-passes/' + i['file'] for b in bp['flights'] for i in b['passes']]
         self.assertEqual(len(paths), 20)
-        for path in paths:
-            raw, headers = self.get(path)
-            self.assertTrue(raw.startswith(b'%PDF-1.4'))
-            self.assertTrue(raw.rstrip().endswith(b'%%EOF'))
-            self.assertIn(b'FICTIONAL SAMPLE', raw)
-            self.assertEqual(headers['Content-Type'], 'application/pdf')
+        paths.append('/boarding-passes/' + bp['bundle'])
+        for prefix in ('', '/apps/travel'):
+            for path in paths:
+                with self.subTest(prefix=prefix, path=path):
+                    raw, headers = self.get(prefix + path)
+                    self.assertTrue(raw.startswith(b'%PDF-1.4'))
+                    self.assertTrue(raw.rstrip().endswith(b'%%EOF'))
+                    self.assertIn(b'FICTIONAL SAMPLE', raw)
+                    self.assertEqual(headers['Content-Type'], 'application/pdf')
+                    self.assertEqual(headers['Content-Disposition'], f'inline; filename="{path.rsplit("/", 1)[1]}"')
         bundle, _ = self.get('/boarding-passes/' + bp['bundle'])
         self.assertEqual(bundle.count(b'/Type /Page '), 10)
 
@@ -94,14 +98,18 @@ class DemoTests(unittest.TestCase):
         item = next(i for i in added['items'] if i['text'] == literal)
         self.assertTrue(item['custom'])
         self.post({'action': 'toggle', 'id': item['id'], 'done': True})
-        self.assertIn(('- [x] ' + literal).encode(), self.get('/export/checklist.md')[0])
+        exported, headers = self.get('/export/checklist.md')
+        self.assertIn(('- [x] ' + literal).encode(), exported)
+        self.assertEqual(headers['Content-Disposition'], 'attachment; filename="travel-checklist.md"')
         removed = self.post({'action': 'remove', 'id': item['id']})
         self.assertFalse(any(i['id'] == item['id'] for i in removed['items']))
 
     def test_todo_checkbox_mirror_and_restore(self):
         for value in (True, False):
             self.post({'action': 'toggle', 'id': 'visitor-cards', 'done': value})
-            self.assertIn(f'- [{"x" if value else " "}] **28 May 2030'.encode(), self.get('/todo.md')[0])
+            note, headers = self.get('/todo.md')
+            self.assertIn(f'- [{"x" if value else " "}] **28 May 2030'.encode(), note)
+            self.assertEqual(headers['Content-Disposition'], 'attachment; filename="todo.md"')
 
     def test_restart_persistence_and_mirror_repair(self):
         original = next(i for i in self.state()['items'] if i['id'] == 'donuts')['done']

@@ -14,6 +14,9 @@ const desktop=await browser.newContext({viewport:{width:1440,height:1050}});
 const mobile=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
 const a=await desktop.newPage(),b=await mobile.newPage();
 const errors=[];for(const p of[a,b])p.on('pageerror',e=>errors.push(e.message));
+const downloads=[];
+for(const context of[desktop,mobile])context.on('page',p=>p.on('download',d=>downloads.push(d.suggestedFilename())));
+for(const p of[a,b])p.on('download',d=>downloads.push(d.suggestedFilename()));
 const request=desktop.request;
 let customId,arrivalOriginal;
 async function mutate(body){const r=await request.post(base+'api/items',{headers:{Origin:origin,'X-Travel-App':'1'},data:body});assert.equal(r.status(),200,await r.text());return r.json();}
@@ -23,7 +26,32 @@ try{
  assert.equal(await a.locator('#bookings .booking').count(),2);assert.equal(await a.locator('#bookings .pdf-links a').count(),10);assert.equal(await a.locator('.flight').count(),6);
  assert.equal(await a.locator('#boarding-passes .pdf-links a').count(),10);
  for(const page of[a,b])await overflow(page);
- const download=await Promise.all([b.waitForEvent('download'),b.locator('#boarding-pass-bundle').click()]);assert.equal(download[0].suggestedFilename(),'all-demo-boarding-passes.pdf');
+ for(const [page,label] of[[a,'desktop'],[b,'mobile']]){
+  const links=page.locator('.pdf-links a,#boarding-pass-bundle');
+  assert.equal(await links.count(),21);
+  for(const link of await links.all()){
+   assert.equal(await link.getAttribute('download'),null);
+   assert.equal(await link.getAttribute('target'),'_blank');
+   assert.match(await link.textContent(),/Read.*PDF/);
+  }
+  for(const selector of['#bookings .pdf-links a','#boarding-passes .pdf-links a','#boarding-pass-bundle']){
+   const link=page.locator(selector).first();
+   const href=await link.evaluate(a=>a.href);
+   const [response,reader]=await Promise.all([
+    page.context().waitForEvent('response',{predicate:r=>r.url()===href&&r.request().isNavigationRequest()}),
+    page.waitForEvent('popup'),link.click()
+   ]);
+   assert.equal(response.status(),200);
+   assert.equal(await response.headerValue('content-type'),'application/pdf');
+   assert.match(await response.headerValue('content-disposition'),/^inline; /);
+   await reader.waitForLoadState('load');
+   await reader.waitForLoadState('networkidle');
+   assert.equal(reader.url(),href);
+   if(selector==='#boarding-pass-bundle')await reader.screenshot({path:output+'/pdf-reader-'+label+'.png'});
+   await reader.close();
+  }
+ }
+ assert.deepEqual(downloads,[]);
  await a.locator('[data-copy="0"]').click();await a.locator('#toast').waitFor({state:'visible'});assert.match(await a.locator('#toast').textContent(),/copied|Press and hold/);
  await a.locator('#toast').waitFor({state:'hidden'});await a.evaluate(()=>window.scrollTo(0,0));await b.evaluate(()=>window.scrollTo(0,0));
  await a.screenshot({path:output+'/demo-desktop.png',fullPage:true});await b.screenshot({path:output+'/demo-mobile.png',fullPage:true});
@@ -38,7 +66,7 @@ try{
  await mutate({action:'toggle',id:'visitor-cards',done:arrivalOriginal});arrivalOriginal=undefined;
  await mutate({action:'remove',id:customId});customId=undefined;
  assert.deepEqual(errors,[]);
- const report={result:'passed',viewports:[1440,390],checks:['six fictional legs','ten ticket links','ten pass links and combined download','copy control','search','custom add/remove','safe literal rendering','two-browser checklist synchronization','hide completed','visitor-card Markdown mirror','no horizontal overflow','no browser exceptions']};
+ const report={result:'passed',viewports:[1440,390],checks:['six fictional legs','21 PDF links open new tabs without download attributes','ticket, pass and combined PDF navigation on desktop and mobile','inline PDF responses and no download events','copy control','search','custom add/remove','safe literal rendering','two-browser checklist synchronization','hide completed','visitor-card Markdown mirror','no horizontal overflow','no browser exceptions']};
  await fs.writeFile(output+'/browser-results.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify(report));
 }finally{
  if(customId)await mutate({action:'remove',id:customId}).catch(()=>{});

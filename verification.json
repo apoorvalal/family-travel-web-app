@@ -39,5 +39,38 @@
     "syntheticCommitIdentity": true
   },
   "originalRepositoryTrackedFilesAndHeadUnchanged": true,
-  "screenshotsVisuallyInspected": true
+  "screenshotsVisuallyInspected": true,
+  "pdfReadingUpdate": {
+    "verifiedAt": "2026-11-01T03:54:03.410487+00:00",
+    "httpIntegrationTests": 7,
+    "inlinePdfDocuments": 21,
+    "pathPrefixes": [
+      "/",
+      "/apps/travel/"
+    ],
+    "markdownExportsRemainAttachments": true,
+    "browser": {
+      "result": "passed",
+      "viewports": [
+        1440,
+        390
+      ],
+      "checks": [
+        "six fictional legs",
+        "21 PDF links open new tabs without download attributes",
+        "ticket, pass and combined PDF navigation on desktop and mobile",
+        "inline PDF responses and no download events",
+        "copy control",
+        "search",
+        "custom add/remove",
+        "safe literal rendering",
+        "two-browser checklist synchronization",
+        "hide completed",
+        "visitor-card Markdown mirror",
+        "no horizontal overflow",
+        "no browser exceptions"
+      ]
+    },
+    "pdfReaderScreenshotsVisuallyInspected": true
+  }
 }

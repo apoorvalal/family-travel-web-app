@@ -21,7 +21,7 @@ The service uses a dynamic unprivileged user. A read-only bind mount makes canon
 3. If changed, merge only this app's nginx location block into the existing server configuration; do not replace the site's entire configuration.
 4. Keep the unit as a symlink to the canonical copy, run `systemctl daemon-reload`, then `systemctl restart simpsons-family-travel`.
 5. Run `nginx -t` before `systemctl reload nginx` whenever proxy configuration changes.
-6. Check `/simpsons-travel/health`, all static assets, the state API, a PDF download, and a same-origin checklist mutation. Confirm shared browser updates and that existing site routes still respond.
+6. Check `/simpsons-travel/health`, all static assets, the state API, inline PDF reading in a new tab, and a same-origin checklist mutation. Confirm shared browser updates and that existing site routes still respond.
 7. Commit the app source/config/docs changes in the lalten deployment repository. Preserve unrelated working-tree changes there.
 
 A code update or ordinary restart does not reset the demo checklist. To prepare a clean demo intentionally, stop the service and archive the state directory before initializing new data. No automatic reset job is installed.

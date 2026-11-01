@@ -73,13 +73,13 @@ function renderTrip() {
     $('#boarding-pass-bundle').href = 'boarding-passes/' + encodeURIComponent(passes.bundle);
     $('#boarding-passes').innerHTML = passes.flights.map(flight => `<article class="booking">
       <h3>${esc(flight.title)}</h3><p class="small muted">${esc(flight.note)}</p>
-      <div class="pdf-links">${flight.passes.map(pass => `<a href="boarding-passes/${encodeURIComponent(pass.file)}" download>${esc(pass.person)} · ${esc(pass.seat)} · PDF ↓</a>`).join('')}</div>
+      <div class="pdf-links">${flight.passes.map(pass => `<a href="boarding-passes/${encodeURIComponent(pass.file)}" target="_blank" rel="noopener noreferrer">${esc(pass.person)} · ${esc(pass.seat)} · Read PDF ↗</a>`).join('')}</div>
     </article>`).join('');
   }
   $('#bookings').innerHTML = state.trip.bookings.map((booking,index) => `<article class="booking">
     <h3>${esc(booking.title)}</h3><div class="small muted">${esc(booking.subtitle)}</div>
     <div class="reference"><div><small>Booking reference</small><code>${esc(booking.reference)}</code></div><button class="copy-button" data-copy="${index}" aria-label="Copy ${esc(booking.airline)} booking reference">Copy</button></div>
-    <div class="pdf-links">${booking.tickets.map(ticket => `<a href="tickets/${encodeURIComponent(ticket.file)}" download>${esc(ticket.person)} · PDF ↓</a>`).join('')}</div>
+    <div class="pdf-links">${booking.tickets.map(ticket => `<a href="tickets/${encodeURIComponent(ticket.file)}" target="_blank" rel="noopener noreferrer">${esc(ticket.person)} · Read PDF ↗</a>`).join('')}</div>
     </article>`).join('');
   $('#flights').innerHTML = state.trip.flights.map((flight,index) => `<article class="flight"><div class="flight-main">
     <div class="flight-head"><strong>${esc(flight.number)}</strong><span>${esc(flight.carrier)}</span></div>

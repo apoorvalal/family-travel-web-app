@@ -84,7 +84,8 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header('X-Frame-Options', 'SAMEORIGIN')
         self.send_header('Content-Security-Policy', "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'self'; base-uri 'none'; form-action 'self'")
         if filename:
-            self.send_header('Content-Disposition', f'attachment; filename="{filename}"')
+            disposition = 'inline' if content_type == 'application/pdf' else 'attachment'
+            self.send_header('Content-Disposition', f'{disposition}; filename="{filename}"')
         self.end_headers()
         if self.command != 'HEAD':
             try:
