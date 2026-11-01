@@ -1,0 +1,43 @@
+{
+  "verifiedAt": "2026-11-01T03:27:22.684295+00:00",
+  "result": "passed",
+  "httpIntegrationTests": 7,
+  "browser": {
+    "result": "passed",
+    "viewports": [
+      1440,
+      390
+    ],
+    "checks": [
+      "six fictional legs",
+      "ten ticket links",
+      "ten pass links and combined download",
+      "copy control",
+      "search",
+      "custom add/remove",
+      "safe literal rendering",
+      "two-browser checklist synchronization",
+      "hide completed",
+      "visitor-card Markdown mirror",
+      "no horizontal overflow",
+      "no browser exceptions"
+    ]
+  },
+  "pdfValidation": {
+    "parser": "Poppler pdfinfo / pdftotext",
+    "tickets": 10,
+    "individualPasses": 10,
+    "bundlePages": 10,
+    "metadata": "Synthetic author, title and subject only; no scripts or forms"
+  },
+  "privacy": {
+    "sourceFilesScanned": true,
+    "personalNamesOrOriginalRouteMatches": 0,
+    "originalDocumentsCopied": false,
+    "originalGitHistoryCopied": false,
+    "freshSyntheticDemoData": true,
+    "syntheticCommitIdentity": true
+  },
+  "originalRepositoryTrackedFilesAndHeadUnchanged": true,
+  "screenshotsVisuallyInspected": true
+}

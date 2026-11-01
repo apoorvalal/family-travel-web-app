@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#164e42">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Simpsons travel">
+  <title>The Simpsons’ Great Escape · Family travel</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar"><a class="brand" href="./"><img src="icon.svg" width="32" height="32" alt="">Simpsons <span>travel</span></a><span id="sync" class="sync" role="status">Connecting…</span></header>
+  <main>
+    <section class="hero">
+      <div class="eyebrow">FICTIONAL FAMILY TRIP · 1–12 JUNE 2030</div>
+      <h1>Springfield<br><span>& beyond</span></h1>
+      <p class="hero-sub">Homer, Marge, Bart, Lisa & Maggie</p>
+      <div class="route-strip" aria-label="Fictional route"><span>SPF</span><i>→</i><span>BRK</span><i>→</i><strong>TRL</strong><i>→</i><strong>CYP</strong><i>→</i><span>OGD</span><i>→</i><span>NHB</span><i>→</i><span>SPF</span></div>
+      <div class="hero-bottom"><span>Terror Lake houseboat</span><span>Cypress Creek hammocks</span><span>Three questionable monorails</span></div>
+    </section>
+    <div class="summary-grid">
+      <button class="summary" data-open="packing"><span class="summary-label">Packing</span><strong id="pack-count">—</strong><progress id="pack-progress" max="1" value="0" aria-label="Packing progress"></progress></button>
+      <button class="summary" data-open="admin"><span class="summary-label">Travel admin</span><strong id="admin-count">—</strong><progress id="admin-progress" max="1" value="0" aria-label="Travel admin progress"></progress></button>
+      <button class="arrival-summary" data-open="admin"><span class="summary-label">28 MAY</span><strong>Fictional visitor cards</strong><span id="arrival-state">For all five Simpsons →</span></button>
+    </div>
+    <nav class="tabs" aria-label="Travel sections">
+      <button class="tab active" data-tab="trip" aria-current="page">Itinerary & tickets</button>
+      <button class="tab" data-tab="packing">Packing</button>
+      <button class="tab" data-tab="admin">Travel admin</button>
+    </nav>
+    <div id="error" role="alert" hidden></div>
+    <section id="trip-panel" aria-label="Itinerary and tickets">
+      <section id="boarding-pass-section" hidden aria-label="Boarding passes">
+        <div class="section-heading"><div><div class="eyebrow">READY TO FLY, PROBABLY</div><h2>Demo boarding passes</h2></div><a id="boarding-pass-bundle" class="text-link" download>All ten · PDF ↓</a></div>
+        <div id="boarding-passes" class="booking-grid"></div>
+        <p class="small muted">Generated examples for the first and last legs. These are fictional documents, not valid tickets. Maggie’s lap-infant pass does not represent a separate seat.</p>
+      </section>
+      <div class="section-heading"><div><div class="eyebrow">INVENTED RESERVATIONS</div><h2>Bookings & tickets</h2></div><span class="small muted">All five Simpsons on each booking</span></div>
+      <div id="bookings" class="booking-grid"><p class="loading">Loading your trip…</p></div>
+      <details class="notice"><summary><strong>Brockway connection · Krusty Air Donut Lounge</strong></summary>
+        <p><strong>Demo lounge plan:</strong> Homer visits the donut counter, Lisa finds a vegetarian snack, and Marge keeps Maggie’s supplies close.</p>
+        <p><strong>Onward travel:</strong> the ME202 monorail connects to Terror Lake. Keep all rakes securely stowed and do not accept a complimentary witness-protection makeover.</p>
+        <p><strong>Cypress Creek:</strong> Hank Scorpio recommends the hammock district. His flamethrower is not an airport-transfer service.</p>
+        <p class="small">All carriers, lounge access, schedules and travel arrangements here are invented for the demo.</p>
+      </details>
+      <div class="section-heading"><div><div class="eyebrow">THERE, THERE, AND BACK</div><h2>Fictional itinerary</h2></div><span class="small muted">Invented local times · no live status</span></div>
+      <div id="flights" class="flights"></div>
+      <div class="section-heading"><div><div class="eyebrow">EXAMPLE PACKING LIMITS</div><h2>Family baggage</h2></div></div>
+      <div class="baggage-grid">
+        <article class="card"><span class="pill">OUTBOUND · KRUSTY AIR</span><h3>4 × 20 kg <span class="muted">+ Maggie’s kit</span></h3><p>One fictional checked bag for each seated traveler. Keep Maggie’s essentials in the cabin.</p><p class="small">Homer’s donut crate is not a recognized baggage category.</p><hr><p class="small">These numbers demonstrate how allowances can be displayed. They are not real airline rules.</p></article>
+        <article class="card"><span class="pill">HOMEWARD · MONORAIL EXPRESS</span><h3>Pack light. <span class="muted">Mind the track.</span></h3><p>Bring the stroller, comfortable shoes and an offline copy of the demo documents.</p><p class="small">Bart’s skateboard and Lisa’s saxophone need their own packing decisions.</p><hr><p class="small">Check actual carriers and equipment rules before planning a real trip.</p></article>
+      </div>
+      <aside class="notice"><strong>One family, one shared list.</strong> Keep Maggie’s food, changing supplies and spare clothes within reach. The route, dates, airport codes, booking references and documents are all fictional. No bassinet, lounge or monorail has actually been reserved.</aside>
+    </section>
+    <section id="list-panel" hidden aria-label="Shared checklist">
+      <div class="section-heading"><div><div id="list-eyebrow" class="eyebrow">GETTING READY</div><h2 id="list-title">Packing checklist</h2></div><a class="text-link" href="export/checklist.md" download>Export checklist ↓</a></div>
+      <p id="list-intro" class="muted intro"></p>
+      <div class="toolbar"><input id="search" type="search" placeholder="Find an item…" aria-label="Search checklist"><label class="remaining"><input id="remaining" type="checkbox"> Hide completed</label></div>
+      <div id="checklists"></div>
+      <form id="add-form" class="add-form"><label for="new-item">Add something to the list</label><div><input id="new-item" type="text" maxlength="500" placeholder="What else do we need?" required autocomplete="off"><button class="primary" type="submit">Add item</button></div></form>
+    </section>
+    <footer><span>Shared family checklist · Changes save automatically</span><span>Unofficial Simpsons-themed demonstration · All travel data is invented.</span><a href="todo.md" download>Download todo.md</a></footer>
+  </main>
+  <div id="toast" role="status" hidden></div>
+</body>
+</html>
